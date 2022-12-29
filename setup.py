@@ -1,7 +1,9 @@
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
+from setuptools.command.build_ext import build_ext
 
-
+import sys
+import subprocess
 
 with open("README.md") as file:
     long_description = file.read()
@@ -19,8 +21,9 @@ CLASSIFIERS = [
 'Programming Language :: Python :: 3.10',
 ]
 
+
 setup(name='tecio',
-version='0.1.4',
+version='0.2.2',
 description='Wrapper for the C++ implementation of Tecio for interfacing with Tecplot SZL files',
 long_description=long_description,
 url='',
@@ -30,9 +33,8 @@ license='MIT',
 classifiers=CLASSIFIERS,
 install_requires=REQUIREMENTS,
 packages=['tecio'],
-package_data={'tecio': ['libtecplotreader.so']},
-#ext_modules=[tecio_lib],
-include_package_data=True,
+package_data={'tecio': ['*.so']},
+#include_package_data=True,
 keywords='tecplot reader szl szplt'
 )
 
