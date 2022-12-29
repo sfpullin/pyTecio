@@ -5,7 +5,7 @@ A Python wrapper for Tecio to read and analyze Tecplot SZL files.
 Python 3.7 or greater, may be compatible with previous versions. CMake is required.
 
 ## Installation
-First the TecIO and C/C++ interface must be compiled. To do this, in the root directory run
+First the TecIO library and C/C++ interface must be compiled. To do this, in the root directory run
 ```
 make
 ```
