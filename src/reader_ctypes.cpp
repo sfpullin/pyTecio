@@ -1,6 +1,7 @@
 #include "tecplotReader.h"
 #include <iostream>
 #include <vector>
+#include <string>
 
 extern "C"
 {
@@ -25,9 +26,18 @@ extern "C"
         
         }
 
-    char** SZL_get_header(TecplotReaderSZL * reader, int zone){
+    int SZL_is_var(TecplotReaderSZL * reader, char* label, int zone){
 
-        return reinterpret_cast<char**>(&reader->get_headers(zone)[0]);
+        std::string l = label;
+        std::vector<std::string> headers = reader->get_headers(zone);
+        int is_found = 0;
+        for (auto & h : headers) {
+            if (h == l){
+                is_found++;
+            }
+        }
+
+        return is_found;
 
     }
 

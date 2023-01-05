@@ -22,3 +22,4 @@ src/tecio_Exports.h
 **/build
 **/*.egg-info
 
+**/.vscode

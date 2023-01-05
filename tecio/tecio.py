@@ -1,4 +1,4 @@
-from ctypes import cdll
+from ctypes import cdll, cast
 from ctypes import c_void_p, c_int, c_double, c_char_p, byref
 from ctypes import POINTER
 
@@ -29,8 +29,8 @@ class SZLreader(object):
         lib.SZL_get_variable.argtypes = [c_void_p, c_char_p, c_int, POINTER(c_int)]
         lib.SZL_get_variable.restype = POINTER(c_double)
 
-        lib.SZL_get_header.argtypes = [c_void_p, c_char_p]
-        lib.SZL_get_header.restype = [POINTER(c_char_p)]
+        lib.SZL_is_var.argtypes = [c_void_p, c_char_p, c_int]
+        lib.SZL_is_var.restype = c_int
 
 
         self.obj = lib.SZL_new(c_char_p(filename.encode('ascii')), verbose)
@@ -67,6 +67,15 @@ class SZLreader(object):
         var = lib.SZL_get_variable(self.obj, c_char_p(varName.encode('utf-8')), c_int(zone), byref(varSize))
         return var[:varSize.value]
 
-    def get_header(self, zone):
+    def is_var(self, varName, zone):
 
-        return lib.SZL_get_headers(self.obj, c_int(zone))
+        return lib.SZL_is_var(self.obj, c_char_p(varName.encode('utf-8')), c_int(zone))
+
+    def check_var_exist(self, varNames, zone):
+
+        out = []
+        for name in varNames:
+            out.append( self.is_var(name, zone) )
+        return out
+
+        
