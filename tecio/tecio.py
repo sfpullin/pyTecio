@@ -29,6 +29,9 @@ class SZLreader(object):
         lib.SZL_get_variable.argtypes = [c_void_p, c_char_p, c_int, POINTER(c_int)]
         lib.SZL_get_variable.restype = POINTER(c_double)
 
+        lib.SZL_get_headers.argtypes = [c_void_p, c_char_p]
+        lib.SZL_get_headers.restype = [POINTER(c_char_p)]
+
 
         self.obj = lib.SZL_new(c_char_p(filename.encode('ascii')), verbose)
 
@@ -63,3 +66,7 @@ class SZLreader(object):
 
         var = lib.SZL_get_variable(self.obj, c_char_p(varName.encode('utf-8')), c_int(zone), byref(varSize))
         return var[:varSize.value]
+
+    def get_header(self, zone):
+
+        return lib.SZL_get_headers(self.obj, c_int(zone))

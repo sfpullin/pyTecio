@@ -25,6 +25,12 @@ extern "C"
         
         }
 
+    char** SZL_get_header(TecplotReaderSZL * reader, int zone){
+
+        return reinterpret_cast<char**>(&reader->get_headers(zone)[0]);
+
+    }
+
 }
 
 /*
