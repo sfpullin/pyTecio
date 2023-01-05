@@ -23,7 +23,7 @@ CLASSIFIERS = [
 
 
 setup(name='tecio',
-version='0.2.2',
+version='0.3.2',
 description='Wrapper for the C++ implementation of Tecio for interfacing with Tecplot SZL files',
 long_description=long_description,
 url='https://github.com/sfpullin/pyTecio',
