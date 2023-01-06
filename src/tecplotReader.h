@@ -29,6 +29,10 @@ class Zone{
     void read_variableHeaders();
     void read_variable(std::string label, int *range);
 
+    // Extraction routines
+
+    int get_NearestNeighbour(std::vector<double> pos);
+
 public:
 
     Zone(void* inFile, int id, int v);
@@ -38,6 +42,11 @@ public:
     std::vector<std::string> get_headers();
     std::vector<double> get_variable(std::string label);
     double* get_variable_ptr(std::string label, int *nNodes);
+
+    // Extraction routines
+
+    std::vector<int> get_NearestNeighbours(std::vector<std::vector<double>> points);
+    std::vector<double> get_variableByIndex(std::vector<int> idx, std::string label);
 
 };
 
@@ -63,6 +72,10 @@ public:
     double get_solutionTime(int zone);
     std::vector<double> get_variable(std::string label, std::initializer_list<int> zones = {});
     double *get_variable_ptr(std::string label, int zone, int *nNodes);
+
+    // Extraction routine
+
+    std::vector<int> get_NearestNeighbours(std::vector<std::vector<double>> points, int zone);
+    std::vector<double> get_variableByIndex(std::vector<int> idx, std::string label, int zone);
  
 };
-

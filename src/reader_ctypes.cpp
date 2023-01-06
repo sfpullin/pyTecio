@@ -24,7 +24,7 @@ extern "C"
         
         return reader->get_variable_ptr(label, zone, nNodes);
         
-        }
+    }
 
     int SZL_is_var(TecplotReaderSZL * reader, char* label, int zone){
 
@@ -41,35 +41,54 @@ extern "C"
 
     }
 
-}
+    int* SZL_get_NearestNeighbours(TecplotReaderSZL * reader, double *x, double *y, double *z, int np, int zone){
 
-/*
-int main(){
+        std::vector<std::vector<double>> p;
+        std::vector<double> row;
 
+        for (int ii = 0; ii < np; ii++){
+            row.push_back(x[ii]);
+            row.push_back(y[ii]);
+            row.push_back(z[ii]);
+            p.push_back(row);
+            row.clear();
+        }
 
-    char filename[] = "../surface_flow.szplt";
-    TecplotReaderSZL *reader = SZL_new(filename);
+        std::vector<int> NN = reader->get_NearestNeighbours(p, zone);
+        int* out = new int[np];
 
-    std::cout << SZL_get_nZones(reader) << std::endl; 
-
-    int zones[] = {1};
-    int nZone = 1;
-    char *varNames[] = {"Pressure", "x", "y", "z"};
-    int nVarNames = 4;
-
-    SZL_read_variables(reader, varNames, nVarNames, zones, nZone);
-
-    double *a;
-    char label[] = "z";
-
-    a = SZL_get_variable(reader, label, 1);
-
-    for (int ii = 10; ii < 30; ii++){
-
-        std::cout << a[ii] << std::endl;
+        for (int ii = 0; ii < np; ii++){
+            out[ii] = NN[ii];
+        }
+        return out;
 
     }
 
-    return 0;
+    void SZL_del_int(int * var){
+        delete var;
+    }
+
+    double* SZL_get_varByIndex(TecplotReaderSZL * reader, int* idx, int nidx, char* label, int zone){
+
+        std::vector<int> index;
+
+        for (int ii = 0; ii < nidx; ii++){
+            index.push_back(idx[ii]);
+        }
+
+        std::vector<double> var = reader->get_variableByIndex(index, std::string(label), zone );
+        double* out = new double[nidx];
+
+        for (int ii = 0; ii < nidx; ii++){
+            out[ii] = var[ii];
+        }
+        return out;
+
+    }
+
+    void SZL_del_double(double * var){
+        delete var;
+    }
+
 }
-*/
+

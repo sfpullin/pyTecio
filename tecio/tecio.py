@@ -2,6 +2,7 @@ from ctypes import cdll, cast
 from ctypes import c_void_p, c_int, c_double, c_char_p, byref
 from ctypes import POINTER
 
+
 from pkg_resources import resource_filename
 
 pth = resource_filename(__name__, "libtecplotreader.so")
@@ -32,6 +33,17 @@ class SZLreader(object):
         lib.SZL_is_var.argtypes = [c_void_p, c_char_p, c_int]
         lib.SZL_is_var.restype = c_int
 
+        lib.SZL_get_NearestNeighbours.argtypes = [c_void_p, POINTER(c_double), POINTER(c_double), POINTER(c_double), c_int, c_int]
+        lib.SZL_get_NearestNeighbours.restype = POINTER(c_int)
+
+        lib.SZL_del_int.argtypes = [POINTER(c_int)]
+        lib.SZL_del_int.restype = c_void_p
+
+        lib.SZL_get_varByIndex.argtypes = [c_void_p, POINTER(c_int), c_int, c_char_p, c_int]
+        lib.SZL_get_varByIndex.restype = POINTER(c_double)
+        
+        lib.SZL_del_double.argtypes = [POINTER(c_double)]
+        lib.SZL_del_double.restype = c_void_p
 
         self.obj = lib.SZL_new(c_char_p(filename.encode('ascii')), verbose)
 
@@ -78,4 +90,32 @@ class SZLreader(object):
             out.append( self.is_var(name, zone) )
         return out
 
-        
+    def get_NearestNeighbours(self, points, zone):
+
+        x = [p[0] for p in points]
+        y = [p[1] for p in points]
+        z = [p[2] for p in points]
+
+        np = len(x)
+
+        x = (c_double * np) (*x)
+        y = (c_double * np) (*y)
+        z = (c_double * np) (*z)
+
+        idx = lib.SZL_get_NearestNeighbours(self.obj, x, y, z, c_int(np), c_int(zone))
+        out = idx[:np]
+        lib.SZL_del_int(idx)
+
+        return out
+
+    def get_varByIndex(self, idx, varName, zone):
+
+        n = len(idx)
+
+        idx = (c_int * n) (*idx)
+
+        var = lib.SZL_get_varByIndex(self.obj, idx, c_int(n), c_char_p(varName.encode('utf-8')), c_int(zone))
+        out = var[:n]
+        lib.SZL_del_double(var)
+
+        return out

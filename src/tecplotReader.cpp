@@ -2,6 +2,7 @@
 #include "TECIO.h"
 
 #include <initializer_list>
+#include <limits>
 
 
 TecplotReaderSZL::TecplotReaderSZL(char* inputFilename, int v){
@@ -107,13 +108,25 @@ double* TecplotReaderSZL::get_variable_ptr(std::string label, int zone, int * nN
 
 std::vector<std::string> TecplotReaderSZL::get_headers(int zone){
 
-    return this->zones[zone - 1]->get_headers();
+    return this->zones[zone-1]->get_headers();
 
 }
 
 double TecplotReaderSZL::get_solutionTime(int zone){
 
     return this->zones[zone-1]->get_solutionTime();
+
+}
+
+std::vector<int> TecplotReaderSZL::get_NearestNeighbours(std::vector<std::vector<double>> points, int zone){
+
+    return this->zones[zone-1]->get_NearestNeighbours(points);
+
+}
+
+std::vector<double> TecplotReaderSZL::get_variableByIndex(std::vector <int> idx, std::string label, int zone){
+
+    return this->zones[zone-1]->get_variableByIndex(idx, label);
 
 }
 
@@ -275,5 +288,68 @@ std::vector<std::string> Zone::get_headers(){
 double Zone::get_solutionTime(){
 
     return this->solutionTime;
+
+}
+
+
+int Zone::get_NearestNeighbour(std::vector<double> pos){
+
+    int idx_x = this->varMap["x"] - 1;
+    int idx_y = this->varMap["y"] - 1;
+    int idx_z = this->varMap["z"] - 1;
+    
+    int N = this->variables[idx_x].size();
+
+    int cur_min;
+    double cur_min_dist = std::numeric_limits<double>::max();
+;
+    double x, y, z, xl, yl, zl, L;
+
+    // Primitive search, should consider an octree
+    for (int ii = 0; ii < N; ii++){
+        x = this->variables[idx_x][ii];
+        y = this->variables[idx_y][ii];
+        z = this->variables[idx_z][ii];
+
+        xl = (x - pos[0]);
+        yl = (y - pos[1]);
+        zl = (z - pos[2]);
+
+        L = xl*xl + yl*yl + zl*zl;
+
+        if ( L < cur_min_dist){
+            cur_min = ii;
+            cur_min_dist = L;
+        }
+
+    }
+
+    return cur_min;
+
+} 
+
+std::vector <int> Zone::get_NearestNeighbours(std::vector<std::vector<double>> points){
+
+    std::vector<int> NN;
+
+    for (auto p: points){
+        NN.push_back( this->get_NearestNeighbour(p) );
+    }
+
+    return NN;
+
+}
+
+
+std::vector<double> Zone::get_variableByIndex(std::vector<int> idx, std::string label){
+
+    int idx_var =  this->varMap[label] - 1;
+    std::vector<double> output;
+
+    for (auto i: idx){
+        output.push_back(this->variables[idx_var][i]);
+    }
+
+    return output;
 
 }
